@@ -5,7 +5,7 @@ import (
 )
 
 func JSONErrorResponse(ctx *gin.Context, err error) {
-	switch v := err.(type) {
+	// switch v := err.(type) {
 
-	}
+	// }
 }
