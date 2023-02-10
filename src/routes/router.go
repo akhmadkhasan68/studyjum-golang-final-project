@@ -40,9 +40,10 @@ func (r *Router) Start(port string) {
 	// transaction.PUT("/id/:id", r.middleware.CheckRole(r.transaction.UpdateStatTransaction, []string{enums.Admin, enums.Cashier}))
 	// transaction.POST("/confirm", r.middleware.CheckRole(r.transaction.ConfirmTransaction, []string{enums.User}))
 
-	r.router.GET("/", func(ctx *gin.Context) {
+	v1 := r.router.Group("/v1")
+	v1.GET("/", func(ctx *gin.Context) {
 		ctx.JSON(200, gin.H{
-			"message": "Hello World from Gin Gonic Golang!",
+			"message": "Hello World!",
 		})
 	})
 

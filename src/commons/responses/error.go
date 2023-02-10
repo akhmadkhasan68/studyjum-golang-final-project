@@ -24,6 +24,12 @@ type ErrUnauthorized struct {
 	Message string
 }
 
+type ErrResponse struct {
+	Message     string
+	Status      uint64
+	Description string
+}
+
 func (e *ErrUnauthorized) Error() string {
 	if e.Message == "" {
 		e.Message = "unauthorized"
