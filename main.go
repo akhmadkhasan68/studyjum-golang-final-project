@@ -5,22 +5,41 @@ import (
 	"final-project/src/config/database"
 	"final-project/src/routes"
 	"fmt"
+	"log"
+	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	_, err := database.ConnectDB()
+	db, err := database.ConnectDB()
 	if err != nil {
 		panic(err)
 	}
 
 	// shipperClientAggregator := httpclient.NewShipperAggregatorClient(config.GetEnvVariable("SHIPPER_BASE_URL"), config.GetEnvVariable("SHIPPER_API_KEY"))
 
-	router := gin.Default()
+	r := gin.New()
 
-	app := routes.NewRouter(router)
-	port := fmt.Sprintf(":%s", config.GetEnvVariable("APP_PORT"))
+	routing := &routes.Router{}
 
-	app.Start(port)
+	prepareModules(routing, db)
+	routing.CreateRouting(r)
+
+	portEnv := config.GetEnvVariable("APP_PORT")
+	appPort, error := strconv.Atoi(portEnv)
+	if error != nil {
+		panic(error)
+	}
+
+	svc := http.Server{
+		Addr:    fmt.Sprintf(":%d", appPort),
+		Handler: r,
+	}
+
+	fmt.Printf("Starting server at port %d\n", appPort)
+	if err := svc.ListenAndServe(); err != nil {
+		log.Fatal(err)
+	}
 }
