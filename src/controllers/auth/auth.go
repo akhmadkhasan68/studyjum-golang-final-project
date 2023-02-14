@@ -71,24 +71,24 @@ func (c *AuthController) Profile(ctx *gin.Context) {
 }
 
 func (c *AuthController) UpdateProfile(ctx *gin.Context) {
-	_, err := c.JWTMiddleware.ExtractJWTUser(ctx)
+	var updateProfileRequest requests.UpdateProfileRequest
+	if err := ctx.ShouldBind(&updateProfileRequest); err != nil {
+		response.JSONErrorResponse(ctx, err)
+		return
+	}
+
+	data, err := c.JWTMiddleware.ExtractJWTUser(ctx)
 	if err != nil {
 		response.JSONErrorResponse(ctx, err)
 		return
 	}
 
-	// var editProfile user.EditProfile
-	// if err := ctx.ShouldBind(&editProfile); err != nil {
-	// 	response.JSONErrorResponse(ctx, err)
-	// 	return
-	// }
+	if err := c.authService.UpdateProfile(data.ID, updateProfileRequest); err != nil {
+		response.JSONErrorResponse(ctx, err)
+		return
+	}
 
-	// if err := c.service.PutUserWithID(ctx, claims.ID, editProfile); err != nil {
-	// 	response.JSONErrorResponse(ctx, err)
-	// 	return
-	// }
-
-	response.JSONBasicResponse(ctx, http.StatusOK, "Update Profile Controller")
+	response.JSONBasicResponse(ctx, http.StatusOK, "Success update your profile!")
 }
 
 func (c *AuthController) ChangePassword(ctx *gin.Context) {
@@ -109,5 +109,5 @@ func (c *AuthController) ChangePassword(ctx *gin.Context) {
 		return
 	}
 
-	response.JSONBasicResponse(ctx, http.StatusCreated, "Success change your password!")
+	response.JSONBasicResponse(ctx, http.StatusOK, "Success change your password!")
 }

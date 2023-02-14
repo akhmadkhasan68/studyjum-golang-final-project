@@ -109,6 +109,40 @@ func (c *AuthService) ChangePassword(userID string, changePasswordRequest reques
 	return c.userRepository.Update(userID, *user)
 }
 
+func (c *AuthService) UpdateProfile(userID string, updateProfileRequest requests.UpdateProfileRequest) error {
+	requestData := updateProfileRequest.ToModel()
+	user, err := c.userRepository.GetUserWithID(userID)
+	if err != nil {
+		if errors.Is(err, &response.ErrNotFound{}) {
+			return response.NewErrUnauthorized("Incorrect username entered")
+		}
+		return err
+	}
+
+	if user.Email != requestData.Email {
+		getUserWithEmail, _ := c.userRepository.GetUserWithEmail(requestData.Email)
+		if getUserWithEmail != nil {
+			return response.NewErrDuplicateUniqueColumn("Email")
+		}
+	}
+
+	if user.Username != requestData.Username {
+		getUserWithUsername, _ := c.userRepository.GetUserWithUsername(requestData.Username)
+		if getUserWithUsername != nil {
+			return response.NewErrDuplicateUniqueColumn("Username")
+		}
+	}
+
+	if user.PhoneNumber != requestData.PhoneNumber {
+		getUserWithPhone, _ := c.userRepository.GetUserWithPhone(requestData.PhoneNumber)
+		if getUserWithPhone != nil {
+			return response.NewErrDuplicateUniqueColumn("Phone number")
+		}
+	}
+
+	return c.userRepository.Update(userID, requestData)
+}
+
 func (c *AuthService) generateToken(user *models.User) (token string, err error) {
 	eJWT := jwt.NewWithClaims(
 		jwt.SigningMethodHS256,
