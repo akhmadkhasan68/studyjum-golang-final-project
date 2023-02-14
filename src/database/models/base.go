@@ -9,7 +9,7 @@ import (
 )
 
 type Base struct {
-	ID        uuid.UUID    `gorm:"type:uuid;primary_key;"`
+	ID        uuid.UUID    `gorm:"type:varchar(100);primary_key;"`
 	CreatedAt time.Time    `gorm:"type:datetime;not null"`
 	UpdatedAt time.Time    `gorm:"type:datetime;not null"`
 	DeletedAt sql.NullTime `gorm:"type:datetime"`

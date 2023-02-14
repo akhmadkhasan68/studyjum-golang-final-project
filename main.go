@@ -3,6 +3,7 @@ package main
 import (
 	"final-project/src/config"
 	"final-project/src/config/database"
+	"final-project/src/database/models"
 	"final-project/src/routes"
 	"fmt"
 	"log"
@@ -17,6 +18,9 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	db.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(&models.User{})
+	db.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(&models.Product{})
 
 	// shipperClientAggregator := httpclient.NewShipperAggregatorClient(config.GetEnvVariable("SHIPPER_BASE_URL"), config.GetEnvVariable("SHIPPER_API_KEY"))
 
