@@ -4,6 +4,7 @@ import (
 	bussiness "final-project/src/bussiness/auth"
 	response "final-project/src/commons/responses"
 	"final-project/src/requests"
+	"final-project/src/responses"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -39,7 +40,7 @@ func (c *AuthController) Login(ctx *gin.Context) {
 		return
 	}
 
-	data, err := c.authService.Login(loginRequest)
+	token, user, err := c.authService.Login(loginRequest)
 	if err != nil {
 		response.JSONErrorResponse(ctx, err)
 		return
@@ -50,7 +51,7 @@ func (c *AuthController) Login(ctx *gin.Context) {
 	// 	return
 	// }
 
-	response.JSONBasicData(ctx, http.StatusOK, "Success login to your account!", data)
+	response.JSONBasicData(ctx, http.StatusOK, "Success login to your account!", responses.ToLoginResponse(user, token))
 }
 
 func (c *AuthController) Profile(ctx *gin.Context) {

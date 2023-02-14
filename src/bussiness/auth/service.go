@@ -58,25 +58,25 @@ func (c *AuthService) Register(registerRequest requests.RegisterRequest) error {
 	return c.userRepository.Create(data)
 }
 
-func (c *AuthService) Login(loginRequest requests.LoginRequest) (any, error) {
+func (c *AuthService) Login(loginRequest requests.LoginRequest) (string, *models.User, error) {
 	user, err := c.userRepository.GetUserWithUsername(loginRequest.Username)
 	if err != nil {
 		if errors.Is(err, &response.ErrNotFound{}) {
-			return nil, response.NewErrUnauthorized("Incorrect username entered")
+			return "", nil, response.NewErrUnauthorized("Incorrect username entered")
 		}
-		return nil, err
+		return "", nil, err
 	}
 
 	if err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginRequest.Password)); err != nil {
-		return nil, response.NewErrUnauthorized("Incorrect password entered")
+		return "", nil, response.NewErrUnauthorized("Incorrect password entered")
 	}
 
 	token, err := c.generateToken(user)
 	if err != nil {
-		return nil, fmt.Errorf("generate token failed: %w", err)
+		return "", nil, fmt.Errorf("generate token failed: %w", err)
 	}
 
-	return token, nil
+	return token, user, nil
 }
 
 func (c *AuthService) GetByUserID() {
