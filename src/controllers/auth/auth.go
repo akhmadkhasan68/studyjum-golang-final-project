@@ -90,3 +90,24 @@ func (c *AuthController) UpdateProfile(ctx *gin.Context) {
 
 	response.JSONBasicResponse(ctx, http.StatusOK, "Update Profile Controller")
 }
+
+func (c *AuthController) ChangePassword(ctx *gin.Context) {
+	var changePasswordRequest requests.ChangePasswordRequest
+	if err := ctx.ShouldBind(&changePasswordRequest); err != nil {
+		response.JSONErrorResponse(ctx, err)
+		return
+	}
+
+	data, err := c.JWTMiddleware.ExtractJWTUser(ctx)
+	if err != nil {
+		response.JSONErrorResponse(ctx, err)
+		return
+	}
+
+	if err := c.authService.ChangePassword(data.ID, changePasswordRequest); err != nil {
+		response.JSONErrorResponse(ctx, err)
+		return
+	}
+
+	response.JSONBasicResponse(ctx, http.StatusCreated, "Success change your password!")
+}

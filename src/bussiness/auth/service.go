@@ -91,6 +91,24 @@ func (c *AuthService) GetByUserID(id string) (*models.User, error) {
 	return user, nil
 }
 
+func (c *AuthService) ChangePassword(userID string, changePasswordRequest requests.ChangePasswordRequest) error {
+	user, err := c.userRepository.GetUserWithID(userID)
+	if err != nil {
+		if errors.Is(err, &response.ErrNotFound{}) {
+			return response.NewErrUnauthorized("Incorrect username entered")
+		}
+		return err
+	}
+
+	hash, err := bcrypt.GenerateFromPassword([]byte(changePasswordRequest.Password), bcrypt.MinCost)
+	if err != nil {
+		return fmt.Errorf("generate from password failed: %w", err)
+	}
+	user.Password = string(hash)
+
+	return c.userRepository.Update(userID, *user)
+}
+
 func (c *AuthService) generateToken(user *models.User) (token string, err error) {
 	eJWT := jwt.NewWithClaims(
 		jwt.SigningMethodHS256,

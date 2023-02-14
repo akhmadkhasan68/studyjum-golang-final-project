@@ -7,7 +7,7 @@ type RegisterRequest struct {
 	Email           string `json:"email" binding:"email,max=100"`
 	PhoneNumber     string `json:"phone_number" binding:"max=14"`
 	Password        string `json:"password" binding:"required,max=128,min=8"`
-	ConfirmPassword string `json:"confirm_password" binding:"eqfield=Password"`
+	ConfirmPassword string `json:"confirm_password" binding:"required,eqfield=Password"`
 	FirstName       string `json:"first_name" binding:"required,max=100"`
 	LastName        string `json:"last_name" binding:"required,max=100"`
 	Address         string `json:"address" binding:"required,max=200"`
@@ -35,4 +35,9 @@ func (request *RegisterRequest) ToModel() models.User {
 type LoginRequest struct {
 	Username string `json:"username" binding:"required"`
 	Password string `json:"password" binding:"required,max=128,min=8"`
+}
+
+type ChangePasswordRequest struct {
+	Password        string `json:"password" binding:"required,max=128,min=8"`
+	ConfirmPassword string `json:"confirm_password" binding:"required,eqfield=Password"`
 }

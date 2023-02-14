@@ -18,6 +18,10 @@ func (c *UserRepository) Create(data models.User) error {
 	return c.db.Create(&data).Error
 }
 
+func (c *UserRepository) Update(id string, data models.User) error {
+	return c.db.Where("id = ?", id).Updates(&data).Error
+}
+
 func (c *UserRepository) GetUserWithEmail(email string) (*models.User, error) {
 	var data = &models.User{}
 

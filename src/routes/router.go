@@ -38,6 +38,7 @@ func (h *Router) CreateRouting(r *gin.Engine) {
 	authLoggedIn := auth.Use(middlewares.JWTMiddlewareAuth(config.GetEnvVariable("JWT_SECRET_KEY")))
 	authLoggedIn.GET("/profile", h.User.Profile)
 	authLoggedIn.PUT("/profile", h.User.UpdateProfile)
+	authLoggedIn.PUT("/change-password", h.User.ChangePassword)
 
 	products := v1.Group("products")
 	products.GET("/", h.Product.GetAllProducts)
