@@ -33,11 +33,11 @@ func (c *AuthController) Register(ctx *gin.Context) {
 }
 
 func (c *AuthController) Login(ctx *gin.Context) {
-	// var login UserLogin
-	// if err := ctx.ShouldBind(&login); err != nil {
-	// 	response.JSONErrorResponse(ctx, err)
-	// 	return
-	// }
+	var loginRequest requests.LoginRequest
+	if err := ctx.ShouldBind(&loginRequest); err != nil {
+		response.JSONErrorResponse(ctx, err)
+		return
+	}
 
 	// token, err := c.service.UserLogin(ctx, login.Email, login.Password)
 	// if err != nil {

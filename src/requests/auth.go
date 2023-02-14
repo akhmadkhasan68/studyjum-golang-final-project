@@ -31,3 +31,8 @@ func (request *RegisterRequest) ToModel() models.User {
 		Role:        models.RolesType(request.Role),
 	}
 }
+
+type LoginRequest struct {
+	Username string `json:"username" binding:"required"`
+	Password string `json:"password" binding:"required,max=128,min=8"`
+}

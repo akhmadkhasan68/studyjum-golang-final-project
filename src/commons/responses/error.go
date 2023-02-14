@@ -2,6 +2,7 @@ package response
 
 import (
 	"final-project/src/utils/validator"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -12,6 +13,21 @@ type ErrDuplicateEntry struct{}
 
 func (e *ErrDuplicateEntry) Error() string {
 	return "data already exists"
+}
+
+type ErrDuplicateUniqueColumn struct {
+	Column string
+}
+
+func (e *ErrDuplicateUniqueColumn) Error() string {
+	if e.Column == "" {
+		e.Column = "Data"
+	}
+	return fmt.Sprintf("%s already exist", e.Column)
+}
+
+func NewErrDuplicateUniqueColumn(column string) *ErrDuplicateUniqueColumn {
+	return &ErrDuplicateUniqueColumn{column}
 }
 
 type ErrNotFound struct{}
@@ -44,6 +60,16 @@ func NewErrUnauthorized(msg string) *ErrUnauthorized {
 func JSONErrorResponse(ctx *gin.Context, err error) {
 	switch v := err.(type) {
 	case *ErrDuplicateEntry:
+		ctx.JSON(
+			http.StatusBadRequest,
+			BasicResponse{
+				Status:    http.StatusBadRequest,
+				Message:   v.Error(),
+				Timestamp: time.Now().UnixNano(),
+			},
+		)
+
+	case *ErrDuplicateUniqueColumn:
 		ctx.JSON(
 			http.StatusBadRequest,
 			BasicResponse{
