@@ -13,8 +13,9 @@ import (
 )
 
 type token struct {
-	ID  string `json:"id"`
-	Exp int64  `json:"exp"`
+	ID   string `json:"id"`
+	Exp  int64  `json:"exp"`
+	Role string `json:"role"`
 }
 
 type IAuthenticator interface {
@@ -30,7 +31,6 @@ func NewAuthenticator(secretKey string) IAuthenticator {
 }
 
 func (s *authenticator) ExtractJWTUser(ctx *gin.Context) (*token, error) {
-
 	user, ok := ctx.Get("user")
 	if !ok {
 		return nil, response.NewErrUnauthorized("user token not found")

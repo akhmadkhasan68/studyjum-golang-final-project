@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"final-project/src/commons/enums"
 	"final-project/src/config"
 	authController "final-project/src/controllers/auth"
 	ordersController "final-project/src/controllers/orders"
@@ -43,13 +44,22 @@ func (h *Router) CreateRouting(r *gin.Engine) {
 
 	//Products Route With JWT Middleware
 	products := v1.Group("/products")
-	productsLoggedIn := products.Use(middlewares.JWTMiddlewareAuth(config.GetEnvVariable("JWT_SECRET_KEY")))
-	productsLoggedIn.GET("/", h.Product.GetAllProducts)
-	productsLoggedIn.GET("/:id", h.Product.GetDetailProduct)
+	products.Use(middlewares.JWTMiddlewareAuth(config.GetEnvVariable("JWT_SECRET_KEY")))
+
+	//Product With All Role
+	productAllRole := products.Use(middlewares.RoleMiddleware([]string{enums.MEMBER, enums.OUTLET}))
+	productAllRole.GET("/", h.Product.GetAllProducts)
+	productAllRole.GET("/:id", h.Product.GetDetailProduct)
+
+	//Product With Outlet Role
+	productOutletRole := products.Use(middlewares.RoleMiddleware([]string{enums.OUTLET}))
+	productOutletRole.POST("/", h.Product.CreateProduct)
+	productOutletRole.PUT("/:id", h.Product.UpdateProduct)
+	productOutletRole.DELETE("/:id", h.Product.DeleteProduct)
 
 	//Orders Route With JWT Middleware
 	orders := v1.Group("/orders")
-	ordersLoggedIn := orders.Use(middlewares.JWTMiddlewareAuth(config.GetEnvVariable("JWT_SECRET_KEY")))
-	ordersLoggedIn.GET("/", h.Order.GetAllOrders)
-	ordersLoggedIn.GET("/:id", h.Order.GetDetailOrder)
+	orders.Use(middlewares.JWTMiddlewareAuth(config.GetEnvVariable("JWT_SECRET_KEY")))
+	orders.GET("/", h.Order.GetAllOrders)
+	orders.GET("/:id", h.Order.GetDetailOrder)
 }

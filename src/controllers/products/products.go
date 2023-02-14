@@ -39,3 +39,19 @@ func (c *ProductsController) GetDetailProduct(ctx *gin.Context) {
 
 	response.JSONBasicData(ctx, http.StatusOK, "Get Detail Product", responses.ToProductResponse(data))
 }
+
+func (c *ProductsController) CreateProduct(ctx *gin.Context) {
+	response.JSONBasicResponse(ctx, http.StatusOK, "Create Product")
+}
+
+func (c *ProductsController) UpdateProduct(ctx *gin.Context) {
+	// id := ctx.Param("id")
+
+	response.JSONBasicResponse(ctx, http.StatusOK, "Update Product")
+}
+
+func (c *ProductsController) DeleteProduct(ctx *gin.Context) {
+	// id := ctx.Param("id")
+
+	response.JSONBasicResponse(ctx, http.StatusOK, "Delete Product")
+}

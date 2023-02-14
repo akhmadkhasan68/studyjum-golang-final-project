@@ -147,8 +147,9 @@ func (c *AuthService) generateToken(user *models.User) (token string, err error)
 	eJWT := jwt.NewWithClaims(
 		jwt.SigningMethodHS256,
 		jwt.MapClaims{
-			"id":  user.ID,
-			"exp": time.Now().Add(c.jwtExpired).Unix(),
+			"id":   user.ID,
+			"role": user.Role,
+			"exp":  time.Now().Add(c.jwtExpired).Unix(),
 		},
 	)
 
