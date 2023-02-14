@@ -34,4 +34,6 @@ type User struct {
 	AreaID      string    `gorm:"column:area_id;type:int unsigned;not null"`
 	Latitude    string    `gorm:"column:latitude;type:varchar(100);not null"`
 	Longitude   string    `gorm:"column:longitude;type:varchar(100);not null"`
+
+	Products []Product `gorm:"foreignKey:outlet_id;"`
 }

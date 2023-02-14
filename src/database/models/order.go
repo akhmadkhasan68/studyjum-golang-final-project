@@ -34,6 +34,7 @@ type Order struct {
 	TotalPrice    float64     `gorm:"column:total_price;type:decimal(16, 2);not null;"`
 	Status        OrderStatus `gorm:"column:status;type:enum('PENDING', 'PAID', 'CANCELED', 'SHIPPED', 'COMPLETED');not null;default PENDING;"`
 
-	Member User `gorm:"foreignKey:member_id;"`
-	Outlet User `gorm:"foreignKey:outlet_id;"`
+	Member       User `gorm:"foreignKey:member_id;"`
+	Outlet       User `gorm:"foreignKey:outlet_id;"`
+	OrderDetails []OrderDetail
 }
