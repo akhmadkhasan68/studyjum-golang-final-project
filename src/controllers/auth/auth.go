@@ -39,13 +39,18 @@ func (c *AuthController) Login(ctx *gin.Context) {
 		return
 	}
 
+	data, err := c.authService.Login(loginRequest)
+	if err != nil {
+		response.JSONErrorResponse(ctx, err)
+		return
+	}
 	// token, err := c.service.UserLogin(ctx, login.Email, login.Password)
 	// if err != nil {
 	// 	response.JSONErrorResponse(ctx, err)
 	// 	return
 	// }
 
-	response.JSONBasicData(ctx, http.StatusOK, "Login Controller", "token")
+	response.JSONBasicData(ctx, http.StatusOK, "Success login to your account!", data)
 }
 
 func (c *AuthController) Profile(ctx *gin.Context) {
