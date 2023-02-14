@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"final-project/src/config"
 	authController "final-project/src/controllers/auth"
 	ordersController "final-project/src/controllers/orders"
 	productsController "final-project/src/controllers/products"
@@ -34,9 +35,9 @@ func (h *Router) CreateRouting(r *gin.Engine) {
 	auth.POST("/login", h.User.Login)
 
 	// Group routing /v1 dengan auth JWT
-	// authLoggedIn := auth.Use(middlewares.JWTMiddlewareAuth(config.GetEnvVariable("JWT_SECRET_KEY")))
-	auth.GET("/profile", h.User.Profile)
-	auth.PUT("/profile", h.User.UpdateProfile)
+	authLoggedIn := auth.Use(middlewares.JWTMiddlewareAuth(config.GetEnvVariable("JWT_SECRET_KEY")))
+	authLoggedIn.GET("/profile", h.User.Profile)
+	authLoggedIn.PUT("/profile", h.User.UpdateProfile)
 
 	products := v1.Group("products")
 	products.GET("/", h.Product.GetAllProducts)

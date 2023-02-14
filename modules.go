@@ -2,7 +2,9 @@ package main
 
 import (
 	bussiness "final-project/src/bussiness/auth"
+	"final-project/src/config"
 	controllers "final-project/src/controllers/auth"
+	"final-project/src/middlewares"
 	"final-project/src/repositories"
 	"final-project/src/routes"
 
@@ -11,7 +13,7 @@ import (
 
 func prepareModules(handler *routes.Router, db *gorm.DB) {
 	// Persiapan proses authenticator
-	// jwtMid := middlewares.NewAuthenticator(config.GetEnvVariable("JWT_SECRET_KEY"))
+	jwtMid := middlewares.NewAuthenticator(config.GetEnvVariable("JWT_SECRET_KEY"))
 	// jwtDuration := config.GetEnvVariable("JWT_EXPIRED_TIME")
 	// jwtExpiredTime, error := strconv.Atoi(jwtDuration)
 	// if error != nil {
@@ -34,5 +36,5 @@ func prepareModules(handler *routes.Router, db *gorm.DB) {
 	// )
 
 	// Controller
-	handler.User = controllers.NewAuthController(userBussiness)
+	handler.User = controllers.NewAuthController(userBussiness, jwtMid)
 }

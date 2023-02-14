@@ -42,3 +42,19 @@ func ToLoginResponse(user *models.User, token string) LoginResponse {
 		Token: token,
 	}
 }
+
+func ToProfileResponse(user *models.User) UserResponse {
+	return UserResponse{
+		Username:    user.Username,
+		Email:       user.Email,
+		PhoneNumber: user.PhoneNumber,
+		FirstName:   user.FirstName,
+		LastName:    user.LastName,
+		Address:     user.Address,
+		AreaID:      user.AreaID,
+		Longitude:   user.Longitude,
+		Latitude:    user.Latitude,
+		CreatedAt:   user.CreatedAt.Format(constants.DateTimeLayout),
+		UpdatedAt:   user.UpdatedAt.Format(constants.DateTimeLayout),
+	}
+}

@@ -3,6 +3,7 @@ package controllers
 import (
 	bussiness "final-project/src/bussiness/auth"
 	response "final-project/src/commons/responses"
+	"final-project/src/middlewares"
 	"final-project/src/requests"
 	"final-project/src/responses"
 	"net/http"
@@ -11,11 +12,15 @@ import (
 )
 
 type AuthController struct {
-	authService *bussiness.AuthService
+	authService   *bussiness.AuthService
+	JWTMiddleware middlewares.IAuthenticator
 }
 
-func NewAuthController(authService *bussiness.AuthService) *AuthController {
-	return &AuthController{authService}
+func NewAuthController(authService *bussiness.AuthService, JWTMiddleware middlewares.IAuthenticator) *AuthController {
+	return &AuthController{
+		authService:   authService,
+		JWTMiddleware: JWTMiddleware,
+	}
 }
 
 func (c *AuthController) Register(ctx *gin.Context) {
@@ -45,37 +50,32 @@ func (c *AuthController) Login(ctx *gin.Context) {
 		response.JSONErrorResponse(ctx, err)
 		return
 	}
-	// token, err := c.service.UserLogin(ctx, login.Email, login.Password)
-	// if err != nil {
-	// 	response.JSONErrorResponse(ctx, err)
-	// 	return
-	// }
 
 	response.JSONBasicData(ctx, http.StatusOK, "Success login to your account!", responses.ToLoginResponse(user, token))
 }
 
 func (c *AuthController) Profile(ctx *gin.Context) {
-	// claims, err := c.mid.ExtractJWTUser(ctx)
-	// if err != nil {
-	// 	response.JSONErrorResponse(ctx, err)
-	// 	return
-	// }
+	data, err := c.JWTMiddleware.ExtractJWTUser(ctx)
+	if err != nil {
+		response.JSONErrorResponse(ctx, err)
+		return
+	}
 
-	// user, err := c.service.GetUserWithID(ctx, claims.ID)
-	// if err != nil {
-	// 	response.JSONErrorResponse(ctx, err)
-	// 	return
-	// }
+	user, err := c.authService.GetByUserID(data.ID)
+	if err != nil {
+		response.JSONErrorResponse(ctx, err)
+		return
+	}
 
-	response.JSONBasicData(ctx, http.StatusOK, "Profile Controller", "")
+	response.JSONBasicData(ctx, http.StatusOK, "Profile Controller", responses.ToProfileResponse(user))
 }
 
 func (c *AuthController) UpdateProfile(ctx *gin.Context) {
-	// claims, err := c.mid.ExtractJWTUser(ctx)
-	// if err != nil {
-	// 	response.JSONErrorResponse(ctx, err)
-	// 	return
-	// }
+	_, err := c.JWTMiddleware.ExtractJWTUser(ctx)
+	if err != nil {
+		response.JSONErrorResponse(ctx, err)
+		return
+	}
 
 	// var editProfile user.EditProfile
 	// if err := ctx.ShouldBind(&editProfile); err != nil {

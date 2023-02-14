@@ -79,12 +79,19 @@ func (c *AuthService) Login(loginRequest requests.LoginRequest) (string, *models
 	return token, user, nil
 }
 
-func (c *AuthService) GetByUserID() {
+func (c *AuthService) GetByUserID(id string) (*models.User, error) {
+	user, err := c.userRepository.GetUserWithID(id)
+	if err != nil {
+		if errors.Is(err, &response.ErrNotFound{}) {
+			return nil, response.NewErrUnauthorized("Incorrect username entered")
+		}
+		return nil, err
+	}
 
+	return user, nil
 }
 
 func (c *AuthService) generateToken(user *models.User) (token string, err error) {
-
 	eJWT := jwt.NewWithClaims(
 		jwt.SigningMethodHS256,
 		jwt.MapClaims{

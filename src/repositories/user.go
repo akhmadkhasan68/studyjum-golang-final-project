@@ -47,3 +47,13 @@ func (c *UserRepository) GetUserWithPhone(phone string) (*models.User, error) {
 
 	return data, nil
 }
+
+func (c *UserRepository) GetUserWithID(id string) (*models.User, error) {
+	var data = &models.User{}
+
+	if err := c.db.First(data, "id = ?", id).Error; err != nil {
+		return nil, err
+	}
+
+	return data, nil
+}
