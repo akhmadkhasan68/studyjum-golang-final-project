@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	bussiness "final-project/src/bussiness/auth"
+	authBussines "final-project/src/bussiness"
 	response "final-project/src/commons/responses"
 	"final-project/src/middlewares"
 	"final-project/src/requests"
@@ -12,11 +12,11 @@ import (
 )
 
 type AuthController struct {
-	authService   *bussiness.AuthService
+	authService   *authBussines.AuthService
 	JWTMiddleware middlewares.IAuthenticator
 }
 
-func NewAuthController(authService *bussiness.AuthService, JWTMiddleware middlewares.IAuthenticator) *AuthController {
+func NewAuthController(authService *authBussines.AuthService, JWTMiddleware middlewares.IAuthenticator) *AuthController {
 	return &AuthController{
 		authService:   authService,
 		JWTMiddleware: JWTMiddleware,

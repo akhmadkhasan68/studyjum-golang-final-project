@@ -30,21 +30,26 @@ func (h *Router) CreateRouting(r *gin.Engine) {
 	// Group routing /v1
 	v1 := r.Group("/v1")
 
+	//Auth Route
 	auth := v1.Group("/auth")
 	auth.POST("/register", h.User.Register)
 	auth.POST("/login", h.User.Login)
 
-	// Group routing /v1 dengan auth JWT
+	//Auth Route With JWT Middleware
 	authLoggedIn := auth.Use(middlewares.JWTMiddlewareAuth(config.GetEnvVariable("JWT_SECRET_KEY")))
 	authLoggedIn.GET("/profile", h.User.Profile)
 	authLoggedIn.PUT("/profile", h.User.UpdateProfile)
 	authLoggedIn.PUT("/change-password", h.User.ChangePassword)
 
-	products := v1.Group("products")
-	products.GET("/", h.Product.GetAllProducts)
-	products.GET("/:id", h.Product.GetDetailProduct)
+	//Products Route With JWT Middleware
+	products := v1.Group("/products")
+	productsLoggedIn := products.Use(middlewares.JWTMiddlewareAuth(config.GetEnvVariable("JWT_SECRET_KEY")))
+	productsLoggedIn.GET("/", h.Product.GetAllProducts)
+	productsLoggedIn.GET("/:id", h.Product.GetDetailProduct)
 
+	//Orders Route With JWT Middleware
 	orders := v1.Group("/orders")
-	orders.GET("/", h.Order.GetAllOrders)
-	orders.GET("/:id", h.Order.GetDetailOrder)
+	ordersLoggedIn := orders.Use(middlewares.JWTMiddlewareAuth(config.GetEnvVariable("JWT_SECRET_KEY")))
+	ordersLoggedIn.GET("/", h.Order.GetAllOrders)
+	ordersLoggedIn.GET("/:id", h.Order.GetDetailOrder)
 }
