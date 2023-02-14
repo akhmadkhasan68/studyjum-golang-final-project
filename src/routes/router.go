@@ -1,15 +1,18 @@
 package routes
 
 import (
-	"final-project/src/config"
-	controllers "final-project/src/controllers/auth"
+	authController "final-project/src/controllers/auth"
+	ordersController "final-project/src/controllers/orders"
+	productsController "final-project/src/controllers/products"
 	"final-project/src/middlewares"
 
 	"github.com/gin-gonic/gin"
 )
 
 type Router struct {
-	User *controllers.AuthController
+	User    *authController.AuthController
+	Order   *ordersController.OrdersController
+	Product *productsController.ProductsController
 }
 
 func (h *Router) CreateRouting(r *gin.Engine) {
@@ -31,7 +34,15 @@ func (h *Router) CreateRouting(r *gin.Engine) {
 	auth.POST("/login", h.User.Login)
 
 	// Group routing /v1 dengan auth JWT
-	authLoggedIn := auth.Use(middlewares.JWTMiddlewareAuth(config.GetEnvVariable("JWT_SECRET_KEY")))
-	authLoggedIn.GET("/profile", h.User.Profile)
-	authLoggedIn.PUT("/profile", h.User.UpdateProfile)
+	// authLoggedIn := auth.Use(middlewares.JWTMiddlewareAuth(config.GetEnvVariable("JWT_SECRET_KEY")))
+	auth.GET("/profile", h.User.Profile)
+	auth.PUT("/profile", h.User.UpdateProfile)
+
+	products := v1.Group("products")
+	products.GET("/", h.Product.GetAllProducts)
+	products.GET("/:id", h.Product.GetDetailProduct)
+
+	orders := v1.Group("/orders")
+	orders.GET("/", h.Order.GetAllOrders)
+	orders.GET("/:id", h.Order.GetDetailOrder)
 }

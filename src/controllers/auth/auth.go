@@ -26,7 +26,7 @@ func (c *AuthController) Register(ctx *gin.Context) {
 	// 	return
 	// }
 
-	response.JSONBasicResponse(ctx, http.StatusCreated, "successfully created user")
+	response.JSONBasicResponse(ctx, http.StatusCreated, "Register controller")
 }
 
 func (c *AuthController) Login(ctx *gin.Context) {
@@ -42,7 +42,7 @@ func (c *AuthController) Login(ctx *gin.Context) {
 	// 	return
 	// }
 
-	response.JSONBasicData(ctx, http.StatusOK, "logged in successfully", "token")
+	response.JSONBasicData(ctx, http.StatusOK, "Login Controller", "token")
 }
 
 func (c *AuthController) Profile(ctx *gin.Context) {
@@ -58,7 +58,7 @@ func (c *AuthController) Profile(ctx *gin.Context) {
 	// 	return
 	// }
 
-	response.JSONBasicData(ctx, http.StatusOK, "OK", "")
+	response.JSONBasicData(ctx, http.StatusOK, "Profile Controller", "")
 }
 
 func (c *AuthController) UpdateProfile(ctx *gin.Context) {
@@ -79,5 +79,5 @@ func (c *AuthController) UpdateProfile(ctx *gin.Context) {
 	// 	return
 	// }
 
-	response.JSONBasicResponse(ctx, http.StatusOK, "sukses memperbarui profile")
+	response.JSONBasicResponse(ctx, http.StatusOK, "Update Profile Controller")
 }
