@@ -31,7 +31,7 @@ type User struct {
 	FirstName   string    `gorm:"column:first_name;type:varchar(50);not null"`
 	LastName    string    `gorm:"column:last_name;type:varchar(50);not null"`
 	Address     string    `gorm:"column:address;type:text;null"`
-	AreaID      string    `gorm:"column:area_id;type:int unsigned;not null"`
+	AreaID      uint64    `gorm:"column:area_id;type:int unsigned;not null"`
 	Latitude    string    `gorm:"column:latitude;type:varchar(100);not null"`
 	Longitude   string    `gorm:"column:longitude;type:varchar(100);not null"`
 

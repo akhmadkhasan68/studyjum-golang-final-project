@@ -1,32 +1,35 @@
 package controllers
 
 import (
+	bussiness "final-project/src/bussiness/auth"
 	response "final-project/src/commons/responses"
+	"final-project/src/requests"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
 type AuthController struct {
+	authService *bussiness.AuthService
 }
 
-func NewAuthController() *AuthController {
-	return &AuthController{}
+func NewAuthController(authService *bussiness.AuthService) *AuthController {
+	return &AuthController{authService}
 }
 
 func (c *AuthController) Register(ctx *gin.Context) {
-	// var user user.InsertUser
-	// if err := ctx.ShouldBind(&user); err != nil {
-	// 	response.JSONErrorResponse(ctx, err)
-	// 	return
-	// }
+	var registerRequest requests.RegisterRequest
+	if err := ctx.ShouldBind(&registerRequest); err != nil {
+		response.JSONErrorResponse(ctx, err)
+		return
+	}
 
-	// if err := c.service.PostUser(ctx, user); err != nil {
-	// 	response.JSONErrorResponse(ctx, err)
-	// 	return
-	// }
+	if err := c.authService.Register(registerRequest); err != nil {
+		response.JSONErrorResponse(ctx, err)
+		return
+	}
 
-	response.JSONBasicResponse(ctx, http.StatusCreated, "Register controller")
+	response.JSONBasicResponse(ctx, http.StatusCreated, "Success to register account!")
 }
 
 func (c *AuthController) Login(ctx *gin.Context) {
