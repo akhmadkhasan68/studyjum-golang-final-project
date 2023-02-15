@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	response "final-project/src/commons/responses"
 	"final-project/src/database/models"
 
 	"gorm.io/gorm"
@@ -26,7 +27,7 @@ func (c *OrderRepository) GetAllOrderByMember(userID string) (*[]models.Order, e
 	var data = &[]models.Order{}
 
 	if err := c.db.Preload("OrderDetails").Preload("OrderDetails.Product").Preload("Member").Preload("Outlet").Find(data, "member_id = ?", userID).Error; err != nil {
-		return nil, err
+		return nil, response.WrapError(err)
 	}
 
 	return data, nil
@@ -36,7 +37,7 @@ func (c *OrderRepository) GetAllOrderByOutlet(outletID string) (*[]models.Order,
 	var data = &[]models.Order{}
 
 	if err := c.db.Preload("OrderDetails").Preload("OrderDetails.Product").Preload("Member").Preload("Outlet").Find(data, "outlet_id = ?", outletID).Error; err != nil {
-		return nil, err
+		return nil, response.WrapError(err)
 	}
 
 	return data, nil
@@ -46,7 +47,7 @@ func (c *OrderRepository) GetOrderMemberByID(UserID string, OrderID string) (*mo
 	var data = &models.Order{}
 
 	if err := c.db.Preload("OrderDetails").Preload("OrderDetails.Product").Preload("Member").Preload("Outlet").First(data, "id = ? AND member_id = ?", OrderID, UserID).Error; err != nil {
-		return nil, err
+		return nil, response.WrapError(err)
 	}
 
 	return data, nil
@@ -56,7 +57,7 @@ func (c *OrderRepository) GetOrderOutletByID(OutletID string, OrderID string) (*
 	var data = &models.Order{}
 
 	if err := c.db.Preload("OrderDetails").Preload("OrderDetails.Product").Preload("Member").Preload("Outlet").First(data, "id = ? AND outlet_id = ?", OrderID, OutletID).Error; err != nil {
-		return nil, err
+		return nil, response.WrapError(err)
 	}
 
 	return data, nil

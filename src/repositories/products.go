@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	response "final-project/src/commons/responses"
 	"final-project/src/database/models"
 
 	"gorm.io/gorm"
@@ -38,7 +39,7 @@ func (c *ProductRepository) GetProductById(id string) (*models.Product, error) {
 	var data = &models.Product{}
 
 	if err := c.db.Preload("Outlet").First(data, "id = ?", id).Error; err != nil {
-		return nil, err
+		return nil, response.WrapError(err)
 	}
 
 	return data, nil
@@ -48,7 +49,7 @@ func (c *ProductRepository) GetProductOutletById(id, outletID string) (*models.P
 	var data = &models.Product{}
 
 	if err := c.db.Preload("Outlet").First(data, "id = ? ANd outlet_id = ?", id, outletID).Error; err != nil {
-		return nil, err
+		return nil, response.WrapError(err)
 	}
 
 	return data, nil

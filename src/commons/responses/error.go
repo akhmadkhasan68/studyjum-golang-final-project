@@ -1,12 +1,15 @@
 package response
 
 import (
+	"errors"
 	"final-project/src/utils/validator"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type ErrDuplicateEntry struct{}
@@ -99,6 +102,16 @@ func JSONErrorResponse(ctx *gin.Context, err error) {
 			},
 		)
 
+	case *ErrNotFound:
+		ctx.JSON(
+			http.StatusNotFound,
+			BasicResponse{
+				Status:    http.StatusNotFound,
+				Message:   v.Error(),
+				Timestamp: time.Now().UnixNano(),
+			},
+		)
+
 	default:
 		ctx.JSON(
 			http.StatusInternalServerError,
@@ -108,5 +121,17 @@ func JSONErrorResponse(ctx *gin.Context, err error) {
 				Timestamp: time.Now().UnixNano(),
 			},
 		)
+	}
+}
+
+func WrapError(err error) error {
+	if strings.Contains(err.Error(), "Duplicate entry") {
+		return &ErrDuplicateEntry{}
+
+	} else if errors.Is(err, gorm.ErrRecordNotFound) {
+		return &ErrNotFound{}
+
+	} else {
+		return err
 	}
 }
