@@ -121,3 +121,48 @@ func (c *ShipperClient) CreateOrder(ctx context.Context, body CreateOrderRequest
 
 	return result, nil
 }
+
+func (c *ShipperClient) CancelOrder(ctx context.Context, OrderID string, reason string) (*CancelOrderResponse, error) {
+	ctxWT, cancel := context.WithTimeout(ctx, 30*time.Second)
+	defer cancel()
+
+	var result *CancelOrderResponse
+
+	r := c.NewRequest()
+	r.SetContext(ctxWT)
+	r.SetBody(CancelOrderRequest{
+		Reason: reason,
+	})
+	r.SetResult(&result)
+
+	res, err := r.Delete(c.BaseURL + "/v3/order/" + OrderID)
+	if err != nil {
+		return nil, fmt.Errorf("getting failed: %w", err)
+
+	} else if res.StatusCode() != http.StatusOK {
+		return nil, fmt.Errorf("response error: %s", res.String())
+	}
+
+	return result, nil
+}
+
+func (c *ShipperClient) GetOrderDetailByExternalID(ctx context.Context, OrderNumber string) (*GetOrderDetailResponse, error) {
+	ctxWT, cancel := context.WithTimeout(ctx, 30*time.Second)
+	defer cancel()
+
+	var result *GetOrderDetailResponse
+
+	r := c.NewRequest()
+	r.SetContext(ctxWT)
+	r.SetResult(&result)
+
+	res, err := r.Get(c.BaseURL + "/v3/order/external-id/" + OrderNumber)
+	if err != nil {
+		return nil, fmt.Errorf("getting failed: %w", err)
+
+	} else if res.StatusCode() != http.StatusOK {
+		return nil, fmt.Errorf("response error: %s", res.String())
+	}
+
+	return result, nil
+}

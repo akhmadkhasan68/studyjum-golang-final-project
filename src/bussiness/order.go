@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
 
 type OrderService struct {
@@ -84,7 +83,6 @@ func (c *OrderService) CreateOrder(ctx *gin.Context, userID string, request requ
 	var subtotalPrice float64 = 0
 	var adminFee float64 = 0
 	var orderNumber = c.generateOrderNumber()
-	var orderID = uuid.New().String()
 	var orderDetails []models.OrderDetail
 	var itemPackageRequest []httpclient.ItemPackageRequest
 
@@ -112,7 +110,6 @@ func (c *OrderService) CreateOrder(ctx *gin.Context, userID string, request requ
 	}
 
 	data.OrderDetails = orderDetails
-	data.ID = orderID
 	data.OrderNumber = orderNumber
 	data.SubTotalPrice = subtotalPrice
 	data.AdminFee = adminFee
@@ -120,6 +117,7 @@ func (c *OrderService) CreateOrder(ctx *gin.Context, userID string, request requ
 	data.TotalPrice = totalPrice
 	data.Status = models.OrderStatus(enums.PENDING)
 
+	errCreateOrder := c.orderRepository.CreateOrder(*data)
 	_, errShipper := c.shipperClient.CreateOrder(ctx, httpclient.CreateOrderRequest{
 		Consignee: httpclient.ConsigneRequest{
 			Name:        memberDetail.FirstName + " " + memberDetail.LastName,
@@ -141,7 +139,7 @@ func (c *OrderService) CreateOrder(ctx *gin.Context, userID string, request requ
 			Lat:     memberDetail.Latitude,
 			Lng:     memberDetail.Longitude,
 		},
-		ExternalID: orderID,
+		ExternalID: orderNumber,
 		Origin: httpclient.DestinationRequest{
 			Address: outletDetail.Address,
 			AreaID:  int64(outletDetail.AreaID),
@@ -164,13 +162,49 @@ func (c *OrderService) CreateOrder(ctx *gin.Context, userID string, request requ
 		return errShipper
 	}
 
-	return c.orderRepository.CreateOrder(*data)
+	return errCreateOrder
 }
 
-func (c *OrderService) CancelOrder(userID string, OrderID string) error {
+func (c *OrderService) CancelOrder(ctx *gin.Context, userID string, OrderID string) error {
 	data, err := c.orderRepository.GetOrderMemberByID(userID, OrderID)
 	if err != nil {
 		return err
+	}
+
+	orderDetail, errShipperOrderDetail := c.shipperClient.GetOrderDetailByExternalID(ctx, data.OrderNumber)
+	if errShipperOrderDetail != nil {
+		return errShipperOrderDetail
+	}
+
+	_, errShipper := c.shipperClient.CancelOrder(ctx, orderDetail.Data.OrderID, "Order dibatalkan oleh pembeli")
+	if errShipper != nil {
+		return errShipper
+	}
+
+	data.Status = models.OrderStatus(enums.CANCELED)
+
+	updateOrderErr := c.orderRepository.UpdateOrder(OrderID, *data)
+	if updateOrderErr != nil {
+		return updateOrderErr
+	}
+
+	return nil
+}
+
+func (c *OrderService) RejectOrder(ctx *gin.Context, OutletID string, OrderID string) error {
+	data, err := c.orderRepository.GetOrderOutletByID(OutletID, OrderID)
+	if err != nil {
+		return err
+	}
+
+	orderDetail, errShipperOrderDetail := c.shipperClient.GetOrderDetailByExternalID(ctx, data.OrderNumber)
+	if errShipperOrderDetail != nil {
+		return errShipperOrderDetail
+	}
+
+	_, errShipper := c.shipperClient.CancelOrder(ctx, orderDetail.Data.OrderID, "Stock barang habis")
+	if errShipper != nil {
+		return errShipper
 	}
 
 	data.Status = models.OrderStatus(enums.CANCELED)

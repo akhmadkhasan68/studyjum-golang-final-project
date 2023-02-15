@@ -45,3 +45,7 @@ type ItemPackageRequest struct {
 	Price int64  `json:"price"`
 	Qty   int64  `json:"qty"`
 }
+
+type CancelOrderRequest struct {
+	Reason string `json:"reason"`
+}

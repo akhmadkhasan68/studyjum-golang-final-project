@@ -107,7 +107,7 @@ func (c *OrdersController) CancelOrder(ctx *gin.Context) {
 		return
 	}
 
-	err := c.orderService.CancelOrder(user.ID, id)
+	err := c.orderService.CancelOrder(ctx, user.ID, id)
 	if err != nil {
 		response.JSONErrorResponse(ctx, err)
 		return
@@ -123,6 +123,17 @@ func (c *OrdersController) ShipOrder(ctx *gin.Context) {
 
 func (c *OrdersController) RejectOrder(ctx *gin.Context) {
 	id := ctx.Param("id")
+	user, jwterr := c.JWTMiddleware.ExtractJWTUser(ctx)
+	if jwterr != nil {
+		response.JSONErrorResponse(ctx, jwterr)
+		return
+	}
+
+	err := c.orderService.RejectOrder(ctx, user.ID, id)
+	if err != nil {
+		response.JSONErrorResponse(ctx, err)
+		return
+	}
 
 	response.JSONBasicData(ctx, http.StatusOK, "Reject Order", id)
 }
