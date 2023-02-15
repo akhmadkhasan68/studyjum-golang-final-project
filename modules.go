@@ -19,14 +19,15 @@ func prepareModules(handler *routes.Router, db *gorm.DB) {
 	//init repository
 	userRepository := repositories.NewUserRepository(db)
 	productRepository := repositories.NewProductRepository(db)
+	orderRepository := repositories.NewOrderRepository(db)
 
 	//init service / bussiness
 	authBussines := bussiness.NewAuthService(userRepository)
 	productBussines := bussiness.NewProductService(productRepository)
-	orderBussiness := bussiness.NewOrderService(shipperClientAggregator)
+	orderBussiness := bussiness.NewOrderService(shipperClientAggregator, orderRepository, productRepository)
 
 	// Controller
 	handler.User = controllers.NewAuthController(authBussines, jwtMid)
 	handler.Product = controllers.NewProductsController(productBussines, jwtMid)
-	handler.Order = controllers.NewOrdersController(orderBussiness)
+	handler.Order = controllers.NewOrdersController(orderBussiness, jwtMid)
 }
