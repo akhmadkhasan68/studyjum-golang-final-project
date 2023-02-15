@@ -1,6 +1,6 @@
-<p align="center">
+<!-- <p align="center">
   <a href="https://nestacademy.id/" target="blank"><img src="https://media-exp1.licdn.com/dms/image/C560BAQGENK8425C92A/company-logo_200_200/0/1639986729861?e=2147483647&v=beta&t=ecGbi4vXbPlluNkcG-dCON_qEOLMjRbWjDuScvofVeI" width="320" alt="Nest Logo" /></a>
-</p>
+</p> -->
 
 # Simple Purchase Order Platform
 
@@ -15,10 +15,22 @@
 ## Installation
 
 - Clone this repo `git clone https://github.com/akhmadkhasan68/studyjum-golang-final-project.git`
-- Run command on terminal `go get` for installing packages
-- Run command on terminal `cp .env.example .env` for copy file `.env.example` to `.env`
+- Run command below on your terminal for installing packages
+```
+go get
+```
+
+- Run command on your terminal for copy file `.env.example` to `.env`
+```
+cp .env.example .env
+```
+
 - Fill value for `.env` file
-- `go run main.go`
+
+- Run command below to start local server 
+```
+go run main.go
+```
 
 ## API Documentation
 
