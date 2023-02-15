@@ -90,7 +90,7 @@ func (c *OrdersController) CreateOrder(ctx *gin.Context) {
 		return
 	}
 
-	err := c.orderService.CreateOrder(user.ID, createOrderRequest)
+	err := c.orderService.CreateOrder(ctx, user.ID, createOrderRequest)
 	if err != nil {
 		response.JSONErrorResponse(ctx, err)
 		return

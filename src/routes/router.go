@@ -64,13 +64,13 @@ func (h *Router) CreateRouting(r *gin.Engine) {
 
 	//Orders Member Role
 	ordersMemberRole := orders.Use(middlewares.RoleMiddleware([]string{enums.MEMBER}))
-	ordersMemberRole.POST("/", h.Order.CreateOrder)      //create order
-	ordersMemberRole.DELETE("/:id", h.Order.CancelOrder) //cancel order
+	ordersMemberRole.POST("/", h.Order.CreateOrder)
+	ordersMemberRole.DELETE("/:id", h.Order.CancelOrder)
 
 	//Order Outlet Role
 	ordersOutletRole := v1.Group("/orders").Group("/outlet")
 	ordersOutletRole.Use(middlewares.JWTMiddlewareAuth(config.GetEnvVariable("JWT_SECRET_KEY")))
 	ordersOutletRole.Use(middlewares.RoleMiddleware([]string{enums.OUTLET}))
-	ordersOutletRole.POST("/ship", h.Order.ShipOrder)           //ship order
-	ordersOutletRole.DELETE("/reject/:id", h.Order.RejectOrder) //reject order
+	ordersOutletRole.POST("/ship", h.Order.ShipOrder)
+	ordersOutletRole.DELETE("/reject/:id", h.Order.RejectOrder)
 }

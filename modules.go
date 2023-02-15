@@ -24,7 +24,7 @@ func prepareModules(handler *routes.Router, db *gorm.DB) {
 	//init service / bussiness
 	authBussines := bussiness.NewAuthService(userRepository)
 	productBussines := bussiness.NewProductService(productRepository)
-	orderBussiness := bussiness.NewOrderService(shipperClientAggregator, orderRepository, productRepository)
+	orderBussiness := bussiness.NewOrderService(shipperClientAggregator, orderRepository, productRepository, userRepository)
 
 	// Controller
 	handler.User = controllers.NewAuthController(authBussines, jwtMid)
