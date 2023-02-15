@@ -3,6 +3,7 @@ package bussiness
 import (
 	"final-project/src/database/models"
 	"final-project/src/repositories"
+	"final-project/src/requests"
 )
 
 type ProductService struct {
@@ -13,7 +14,7 @@ func NewProductService(productRepository *repositories.ProductRepository) *Produ
 	return &ProductService{productRepository}
 }
 
-func (c *ProductService) GetAll() (*[]models.Product, error) {
+func (c *ProductService) GetAllProducts() (*[]models.Product, error) {
 	data, err := c.productRepository.GetAll()
 	if err != nil {
 		return nil, err
@@ -22,7 +23,7 @@ func (c *ProductService) GetAll() (*[]models.Product, error) {
 	return data, nil
 }
 
-func (c *ProductService) DetailById(id string) (*models.Product, error) {
+func (c *ProductService) DetailProductById(id string) (*models.Product, error) {
 	data, err := c.productRepository.GetProductById(id)
 	if err != nil {
 		return nil, err
@@ -31,14 +32,19 @@ func (c *ProductService) DetailById(id string) (*models.Product, error) {
 	return data, nil
 }
 
-func (c *ProductService) Create() {
+func (c *ProductService) CreateProduct(request requests.CreateProductRequest, userID string) error {
+	data := request.ToModel()
+	data.OutletID = userID
 
+	return c.productRepository.Create(data)
 }
 
-func (c *ProductService) Update() {
+func (c *ProductService) UpdateProduct(productID string, request requests.CreateProductRequest) error {
+	data := request.ToModel()
 
+	return c.productRepository.Update(productID, data)
 }
 
-func (c *ProductService) Delete() {
-
+func (c *ProductService) DeleteProduct(id string) error {
+	return c.productRepository.Delete(id)
 }

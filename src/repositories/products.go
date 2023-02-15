@@ -34,12 +34,12 @@ func (c *ProductRepository) GetProductById(id string) (*models.Product, error) {
 	return data, nil
 }
 
-func (c *ProductRepository) Create(data models.Product) {
-
+func (c *ProductRepository) Create(data models.Product) error {
+	return c.db.Create(&data).Error
 }
 
-func (c *ProductRepository) Update(id string, data models.Order) {
-
+func (c *ProductRepository) Update(id string, data models.Product) error {
+	return c.db.Where("id = ?", id).Updates(&data).Error
 }
 
 func (c *ProductRepository) Delete(id string) error {

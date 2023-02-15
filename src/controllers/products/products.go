@@ -4,6 +4,7 @@ import (
 	"final-project/src/bussiness"
 	response "final-project/src/commons/responses"
 	"final-project/src/middlewares"
+	"final-project/src/requests"
 	"final-project/src/responses"
 	"net/http"
 
@@ -20,7 +21,7 @@ func NewProductsController(productService *bussiness.ProductService, JWTMiddlewa
 }
 
 func (c *ProductsController) GetAllProducts(ctx *gin.Context) {
-	datas, err := c.productService.GetAll()
+	datas, err := c.productService.GetAllProducts()
 	if err != nil {
 		response.JSONErrorResponse(ctx, err)
 		return
@@ -31,7 +32,7 @@ func (c *ProductsController) GetAllProducts(ctx *gin.Context) {
 
 func (c *ProductsController) GetDetailProduct(ctx *gin.Context) {
 	id := ctx.Param("id")
-	data, err := c.productService.DetailById(id)
+	data, err := c.productService.DetailProductById(id)
 	if err != nil {
 		response.JSONErrorResponse(ctx, err)
 		return
@@ -41,17 +42,52 @@ func (c *ProductsController) GetDetailProduct(ctx *gin.Context) {
 }
 
 func (c *ProductsController) CreateProduct(ctx *gin.Context) {
-	response.JSONBasicResponse(ctx, http.StatusOK, "Create Product")
+	user, jwterr := c.JWTMiddleware.ExtractJWTUser(ctx)
+	if jwterr != nil {
+		response.JSONErrorResponse(ctx, jwterr)
+		return
+	}
+
+	var createProductRequest requests.CreateProductRequest
+	if err := ctx.ShouldBind(&createProductRequest); err != nil {
+		response.JSONErrorResponse(ctx, err)
+		return
+	}
+
+	err := c.productService.CreateProduct(createProductRequest, user.ID)
+	if err != nil {
+		response.JSONErrorResponse(ctx, err)
+		return
+	}
+
+	response.JSONBasicResponse(ctx, http.StatusCreated, "Success create product!")
 }
 
 func (c *ProductsController) UpdateProduct(ctx *gin.Context) {
-	// id := ctx.Param("id")
+	id := ctx.Param("id")
 
-	response.JSONBasicResponse(ctx, http.StatusOK, "Update Product")
+	var updateProductRequest requests.CreateProductRequest
+	if err := ctx.ShouldBind(&updateProductRequest); err != nil {
+		response.JSONErrorResponse(ctx, err)
+		return
+	}
+
+	err := c.productService.UpdateProduct(id, updateProductRequest)
+	if err != nil {
+		response.JSONErrorResponse(ctx, err)
+		return
+	}
+
+	response.JSONBasicResponse(ctx, http.StatusOK, "Success update product!")
 }
 
 func (c *ProductsController) DeleteProduct(ctx *gin.Context) {
-	// id := ctx.Param("id")
+	id := ctx.Param("id")
+	err := c.productService.DeleteProduct(id)
+	if err != nil {
+		response.JSONErrorResponse(ctx, err)
+		return
+	}
 
-	response.JSONBasicResponse(ctx, http.StatusOK, "Delete Product")
+	response.JSONBasicResponse(ctx, http.StatusOK, "Success delete product!")
 }
