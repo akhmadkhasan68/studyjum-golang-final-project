@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	response "final-project/src/commons/responses"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -34,6 +35,7 @@ func RoleMiddleware(roles []string) gin.HandlerFunc {
 		isExist := false
 
 		for _, role := range roles {
+			fmt.Println(role)
 			if role == res.Role {
 				isExist = true
 				break

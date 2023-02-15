@@ -13,26 +13,26 @@ import (
 
 type Clien = resty.Client
 
-type shipperAgregator struct {
+type ShipperClient struct {
 	*resty.Client
 }
 
-type Servicer interface {
-	GetCountries(ctx context.Context, id, limit, page int) (map[string]interface{}, error)
-	GetProvices(ctx context.Context, countryID, id, limit, page int) (*GetProvinces, error)
-}
+// type Servicer interface {
+// 	GetCountries(ctx context.Context, id, limit, page int) (map[string]interface{}, error)
+// 	GetProvices(ctx context.Context, countryID, id, limit, page int) (*GetProvinces, error)
+// }
 
-func NewShipperAggregatorClient(baseUrl, token string) Servicer {
+func NewShipperAggregatorClient(baseUrl, token string) *ShipperClient {
 	c := resty.New()
 	c.SetBaseURL(baseUrl)
 	c.SetHeader("X-API-Key", token)
 	c.SetHeader("Content-Type", "application/json")
 	c.SetTimeout(180 * time.Second)
 
-	return &shipperAgregator{c}
+	return &ShipperClient{c}
 }
 
-func (c *shipperAgregator) GetCountries(ctx context.Context, id, limit, page int) (map[string]interface{}, error) {
+func (c *ShipperClient) GetCountries(ctx context.Context, id, limit, page int) (map[string]interface{}, error) {
 	ctxWT, cancel := context.WithTimeout(ctx, 30*time.Second)
 	defer cancel()
 
@@ -67,7 +67,7 @@ func (c *shipperAgregator) GetCountries(ctx context.Context, id, limit, page int
 	return result, nil
 }
 
-func (c *shipperAgregator) GetProvices(ctx context.Context, countryID, id, limit, page int) (*GetProvinces, error) {
+func (c *ShipperClient) GetProvices(ctx context.Context, countryID, id, limit, page int) (*GetProvinces, error) {
 	ctxWT, cancel := context.WithTimeout(ctx, 30*time.Second)
 	defer cancel()
 

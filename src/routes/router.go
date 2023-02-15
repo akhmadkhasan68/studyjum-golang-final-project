@@ -3,18 +3,16 @@ package routes
 import (
 	"final-project/src/commons/enums"
 	"final-project/src/config"
-	authController "final-project/src/controllers/auth"
-	ordersController "final-project/src/controllers/orders"
-	productsController "final-project/src/controllers/products"
+	"final-project/src/controllers"
 	"final-project/src/middlewares"
 
 	"github.com/gin-gonic/gin"
 )
 
 type Router struct {
-	User    *authController.AuthController
-	Order   *ordersController.OrdersController
-	Product *productsController.ProductsController
+	User    *controllers.AuthController
+	Order   *controllers.OrdersController
+	Product *controllers.ProductsController
 }
 
 func (h *Router) CreateRouting(r *gin.Engine) {
@@ -47,9 +45,8 @@ func (h *Router) CreateRouting(r *gin.Engine) {
 	products.Use(middlewares.JWTMiddlewareAuth(config.GetEnvVariable("JWT_SECRET_KEY")))
 
 	//Product With All Role
-	productAllRole := products.Use(middlewares.RoleMiddleware([]string{enums.MEMBER, enums.OUTLET}))
-	productAllRole.GET("/", h.Product.GetAllProducts)
-	productAllRole.GET("/:id", h.Product.GetDetailProduct)
+	products.GET("/", h.Product.GetAllProducts)
+	products.GET("/:id", h.Product.GetDetailProduct)
 
 	//Product With Outlet Role
 	productOutletRole := products.Use(middlewares.RoleMiddleware([]string{enums.OUTLET}))
@@ -60,6 +57,20 @@ func (h *Router) CreateRouting(r *gin.Engine) {
 	//Orders Route With JWT Middleware
 	orders := v1.Group("/orders")
 	orders.Use(middlewares.JWTMiddlewareAuth(config.GetEnvVariable("JWT_SECRET_KEY")))
+
+	//Orders Route All Role
 	orders.GET("/", h.Order.GetAllOrders)
 	orders.GET("/:id", h.Order.GetDetailOrder)
+
+	//Orders Member Role
+	ordersMemberRole := orders.Use(middlewares.RoleMiddleware([]string{enums.MEMBER}))
+	ordersMemberRole.POST("/", h.Order.CreateOrder)      //create order
+	ordersMemberRole.DELETE("/:id", h.Order.CancelOrder) //cancel order
+
+	//Order Outlet Role
+	ordersOutletRole := v1.Group("/orders").Group("/outlet")
+	ordersOutletRole.Use(middlewares.JWTMiddlewareAuth(config.GetEnvVariable("JWT_SECRET_KEY")))
+	ordersOutletRole.Use(middlewares.RoleMiddleware([]string{enums.OUTLET}))
+	ordersOutletRole.POST("/ship", h.Order.ShipOrder)           //ship order
+	ordersOutletRole.DELETE("/reject/:id", h.Order.RejectOrder) //reject order
 }

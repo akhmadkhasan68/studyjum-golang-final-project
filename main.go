@@ -24,8 +24,6 @@ func main() {
 	db.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(&models.Order{})
 	db.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(&models.OrderDetail{})
 
-	// shipperClientAggregator := httpclient.NewShipperAggregatorClient(config.GetEnvVariable("SHIPPER_BASE_URL"), config.GetEnvVariable("SHIPPER_API_KEY"))
-
 	r := gin.New()
 
 	routing := &routes.Router{}
